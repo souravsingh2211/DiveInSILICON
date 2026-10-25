@@ -1,286 +1,113 @@
-import { useEffect, useRef, useState } from "react";
-import "./Login.css";
+import { useEffect, useState } from 'react'
+import { useAuth } from './AuthContext'
+import { preloadGoogle } from './google'
+import './Login.css'
 
-const BRAND = "DiveinSILICON";
+const GoogleIcon = () => (
+  <svg viewBox="0 0 48 48" aria-hidden="true">
+    <path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.9 6.1C12.4 13.6 17.7 9.5 24 9.5z" />
+    <path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4.1 7.1-10.1 7.1-17.5z" />
+    <path fill="#FBBC05" d="M10.5 28.7A14.5 14.5 0 0 1 9.5 24c0-1.6.3-3.2.8-4.7l-7.9-6.1A24 24 0 0 0 0 24c0 3.9.9 7.5 2.6 10.8l7.9-6.1z" />
+    <path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.5-5.8c-2.1 1.4-4.9 2.3-8.4 2.3-6.3 0-11.6-4.1-13.5-9.8l-7.9 6.1C6.5 42.6 14.6 48 24 48z" />
+  </svg>
+)
 
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-/* Oscilloscope-style canvas: the signal gets busier as the person types. */
-function Signal({ energy }) {
-  const canvasRef = useRef(null);
-  const energyRef = useRef(energy);
-  energyRef.current = energy;
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    let raf;
-    let phase = 0;
-    let smooth = energyRef.current;
-
-    const resize = () => {
-      const dpr = window.devicePixelRatio || 1;
-      const { width, height } = canvas.getBoundingClientRect();
-      canvas.width = width * dpr;
-      canvas.height = height * dpr;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    };
-
-    const draw = () => {
-      const { width: w, height: h } = canvas.getBoundingClientRect();
-      ctx.clearRect(0, 0, w, h);
-
-      // graticule
-      ctx.strokeStyle = "rgba(241,244,236,0.08)";
-      ctx.lineWidth = 1;
-      for (let x = 0; x <= w; x += w / 10) {
-        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
-      }
-      for (let y = 0; y <= h; y += h / 6) {
-        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
-      }
-
-      smooth += (energyRef.current - smooth) * 0.06;
-      const cycles = 2 + smooth * 0.35;
-      const amp = h * (0.18 + Math.min(smooth, 14) * 0.012);
-
-      const wave = (color, width, harmonic) => {
-        ctx.strokeStyle = color;
-        ctx.lineWidth = width;
-        ctx.beginPath();
-        for (let x = 0; x <= w; x += 2) {
-          const t = (x / w) * Math.PI * 2 * cycles + phase;
-          const y =
-            h / 2 +
-            Math.sin(t) * amp +
-            Math.sin(t * 3 + phase) * amp * harmonic;
-          x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-        }
-        ctx.stroke();
-      };
-
-      wave("rgba(208,138,62,0.25)", 6, 0.22);
-      wave("#E9A858", 2, 0.22);
-
-      if (!reduce) {
-        phase += 0.025;
-        raf = requestAnimationFrame(draw);
-      }
-    };
-
-    resize();
-    draw();
-    window.addEventListener("resize", resize);
-    return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener("resize", resize);
-    };
-  }, []);
-
-  return <canvas ref={canvasRef} className="signal" aria-hidden="true" />;
+function PasswordField({ id, value, onChange, autoComplete, placeholder, minLength }) {
+  const [show, setShow] = useState(false)
+  return (
+    <div className="lg-f">
+      <input id={id} type={show ? 'text' : 'password'} value={value} onChange={onChange} autoComplete={autoComplete} placeholder={placeholder} minLength={minLength} required />
+      <button type="button" className="lg-sh" onClick={() => setShow(s => !s)}>{show ? 'Hide' : 'Show'}</button>
+    </div>
+  )
 }
 
-/* Static copper traces and solder pads behind the left panel. */
-function Traces() {
-  return (
-    <svg className="traces" viewBox="0 0 600 800" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-      <g fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M0 120 H140 L180 160 H320" />
-        <path d="M0 160 H90 L130 200 H260 L300 240 H600" />
-        <path d="M600 90 H470 L430 130 H360" />
-        <path d="M0 640 H120 L160 600 H380 L420 640 H600" />
-        <path d="M0 690 H200 L240 730 H600" />
-        <path d="M600 560 H520 L480 520 H440" />
-      </g>
-      <g fill="currentColor">
-        <circle cx="320" cy="160" r="6" />
-        <circle cx="360" cy="130" r="6" />
-        <circle cx="440" cy="520" r="6" />
-        <circle cx="380" cy="600" r="6" />
-      </g>
-      <g fill="none" stroke="currentColor" strokeWidth="2">
-        <circle cx="320" cy="160" r="12" />
-        <circle cx="360" cy="130" r="12" />
-        <circle cx="440" cy="520" r="12" />
-        <circle cx="380" cy="600" r="12" />
-      </g>
-    </svg>
-  );
-}
+/**
+ * Props:
+ *   defaultMode - 'in' (log in) or 'up' (sign up)
+ *   onBack()    - logo / "Back to home"
+ *   onSuccess() - called after a successful login or signup
+ * Talks to the FastAPI backend through AuthContext.
+ */
+export default function Login({ defaultMode = 'in', onBack, onSuccess }) {
+  const { login, signup, googleLogin } = useAuth()
+  const [mode, setMode] = useState(defaultMode)
+  const [dx, setDx] = useState('18px')
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState('')
+  const [lg, setLg] = useState({ email: '', password: '', remember: true })
+  const [su, setSu] = useState({ name: '', email: '', password: '' })
 
-function FeatureIcon({ d }) {
-  return (
-    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d={d} />
-    </svg>
-  );
-}
+  useEffect(() => { preloadGoogle().catch(() => {}) }, [])
 
-export default function Login({ onLogin, onGoogle }) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [remember, setRemember] = useState(true);
-  const [errors, setErrors] = useState({});
-  const [formError, setFormError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const go = m => { if (m === mode) return; setError(''); setDx(m === 'up' ? '18px' : '-18px'); setMode(m) }
 
-  const validate = () => {
-    const next = {};
-    if (!EMAIL_RE.test(email.trim())) next.email = "Enter a valid email address.";
-    if (password.length < 6) next.password = "Password must be at least 6 characters.";
-    setErrors(next);
-    return Object.keys(next).length === 0;
-  };
+  const run = async fn => {
+    setError(''); setBusy(true)
+    try { await fn(); onSuccess && onSuccess() }
+    catch (e) { setError(e.message || 'Something went wrong') }
+    finally { setBusy(false) }
+  }
+  const submitLogin = e => { e.preventDefault(); run(() => login(lg)) }
+  const submitSignup = e => { e.preventDefault(); run(() => signup(su)) }
+  const google = () => run(googleLogin)
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setFormError("");
-    if (!validate()) return;
-
-    setLoading(true);
-    try {
-      // TODO: replace with your real API call, e.g.
-      // const res = await fetch("/api/login", { method: "POST", ... });
-      if (onLogin) await onLogin({ email: email.trim(), password, remember });
-      else await new Promise((r) => setTimeout(r, 900));
-    } catch (err) {
-      setFormError(err?.message || "Couldn't sign you in. Check your details and try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const energy = email.length + password.length;
+  const label = (idle) => (busy ? 'Please wait…' : idle)
 
   return (
-    <main className="login">
-      <section className="login__board">
-        <Traces />
-        <div className="login__brand">
-          <span className="login__logo" aria-hidden="true">
-            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M2 12h4l3-7 4 14 3-7h6" />
-            </svg>
-          </span>
-          {BRAND}
-        </div>
+    <div className="lg">
+      <nav className="lg-nav">
+        <button type="button" className="lg-logo" onClick={() => onBack && onBack()}>DiveInSILICON</button>
+        <button type="button" className="lg-pill" onClick={() => onBack && onBack()}>Back to home</button>
+      </nav>
 
-        <div className="login__pitch">
-          <h1>Go deeper into electronics and communication.</h1>
-          <p>
-            Structured ECE courses, interview practice and placement
-            preparation, all in one place.
-          </p>
-          <ul className="login__features">
-            <li>
-              <FeatureIcon d="M4 5h16v11H4zM8 20h8M12 16v4" />
-              Courses mapped to the ECE syllabus
-            </li>
-            <li>
-              <FeatureIcon d="M12 3a4 4 0 0 1 4 4v3a4 4 0 0 1-8 0V7a4 4 0 0 1 4-4zM5 11a7 7 0 0 0 14 0M12 18v3" />
-              Mock interviews with real feedback
-            </li>
-            <li>
-              <FeatureIcon d="M4 19V9m6 10V5m6 14v-7m4 7H2" />
-              Progress tracking across every subject
-            </li>
-          </ul>
-        </div>
+      <main className="lg-main">
+        <div className="lg-card" data-m={mode} style={{ '--dx': dx }}>
+          <div className="lg-tabs" role="tablist">
+            <i />
+            <button type="button" role="tab" aria-selected={mode === 'in'} onClick={() => go('in')}>Log in</button>
+            <button type="button" role="tab" aria-selected={mode === 'up'} onClick={() => go('up')}>Sign up</button>
+          </div>
 
-        <Signal energy={energy} />
-      </section>
-
-      <section className="login__panel">
-        <form className="form" onSubmit={handleSubmit} noValidate>
-          <h2>Welcome back</h2>
-          <p className="form__sub">Sign in to continue your learning.</p>
-
-          <button type="button" className="btn btn--ghost" onClick={onGoogle}>
-            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-              <path fill="#4285F4" d="M22.5 12.2c0-.8-.1-1.5-.2-2.2H12v4.2h5.9c-.3 1.4-1 2.5-2.2 3.3v2.7h3.5c2-1.9 3.3-4.700 3.3-8z" />
-              <path fill="#34A853" d="M12 23c3 0 5.500-1 7.300-2.700l-3.500-2.700c-1 .7-2.200 1-3.800 1-2.900 0-5.400-2-6.300-4.600H2.100v2.800C3.900 20.400 7.700 23 12 23z" />
-              <path fill="#FBBC05" d="M5.700 14c-.2-.7-.4-1.300-.4-2s.1-1.400.4-2V7.200H2.100C1.400 8.700 1 10.300 1 12s.4 3.300 1.100 4.800L5.700 14z" />
-              <path fill="#EA4335" d="M12 5.400c1.600 0 3.100.6 4.200 1.700l3.100-3.100C17.500 2.200 15 1 12 1 7.700 1 3.900 3.600 2.100 7.200L5.700 10c.9-2.600 3.400-4.600 6.300-4.600z" />
-            </svg>
-            Continue with Google
-          </button>
-
-          <div className="form__divider"><span>or sign in with email</span></div>
-
-          {formError && (
-            <div className="form__alert" role="alert">{formError}</div>
+          {mode === 'in' ? (
+            <form className="lg-panel" key="in" onSubmit={submitLogin}>
+              <h1>Welcome back</h1>
+              <p className="lg-sub">Sign in to continue your learning.</p>
+              <button type="button" className="lg-btn lg-g" onClick={google} disabled={busy}><GoogleIcon />Continue with Google</button>
+              <div className="lg-or">or sign in with email</div>
+              <label htmlFor="le">Email</label>
+              <div className="lg-f"><input id="le" type="email" autoComplete="email" placeholder="you@college.ac.in" value={lg.email} onChange={e => setLg({ ...lg, email: e.target.value })} required /></div>
+              <label htmlFor="lp">Password</label>
+              <PasswordField id="lp" autoComplete="current-password" placeholder="Your password" value={lg.password} onChange={e => setLg({ ...lg, password: e.target.value })} />
+              <div className="lg-row">
+                <label><input type="checkbox" checked={lg.remember} onChange={e => setLg({ ...lg, remember: e.target.checked })} /> Keep me signed in</label>
+                <a href="#forgot">Forgot password?</a>
+              </div>
+              {error && <div className="lg-err" role="alert">{error}</div>}
+              <button type="submit" className="lg-btn" disabled={busy}>{label('Sign in')}</button>
+              <p className="lg-sw">New to DiveInSILICON? <button type="button" onClick={() => go('up')}>Create an account</button></p>
+            </form>
+          ) : (
+            <form className="lg-panel" key="up" onSubmit={submitSignup}>
+              <h1>Create account</h1>
+              <p className="lg-sub">Free to start. No card needed.</p>
+              <label htmlFor="sn">Full name</label>
+              <div className="lg-f"><input id="sn" type="text" autoComplete="name" placeholder="Your name" value={su.name} onChange={e => setSu({ ...su, name: e.target.value })} required /></div>
+              <label htmlFor="se">College email</label>
+              <div className="lg-f"><input id="se" type="email" autoComplete="email" placeholder="you@college.ac.in" value={su.email} onChange={e => setSu({ ...su, email: e.target.value })} required /></div>
+              <label htmlFor="sp">Password</label>
+              <PasswordField id="sp" autoComplete="new-password" placeholder="At least 8 characters" minLength={8} value={su.password} onChange={e => setSu({ ...su, password: e.target.value })} />
+              {error && <div className="lg-err" role="alert">{error}</div>}
+              <button type="submit" className="lg-btn lg-mt" disabled={busy}>{label('Create account')}</button>
+              <div className="lg-or">or</div>
+              <button type="button" className="lg-btn lg-g" onClick={google} disabled={busy}><GoogleIcon />Sign up with Google</button>
+              <p className="lg-sw">Already have an account? <button type="button" onClick={() => go('in')}>Log in</button></p>
+            </form>
           )}
+        </div>
+      </main>
 
-          <div className="field">
-            <label htmlFor="email">Email</label>
-            <input
-              id="email"
-              type="email"
-              autoComplete="email"
-              placeholder="you@college.ac.in"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              aria-invalid={!!errors.email}
-              aria-describedby={errors.email ? "email-err" : undefined}
-            />
-            {errors.email && <span id="email-err" className="field__error">{errors.email}</span>}
-          </div>
-
-          <div className="field">
-            <label htmlFor="password">Password</label>
-            <div className="field__password">
-              <input
-                id="password"
-                type={showPassword ? "text" : "password"}
-                autoComplete="current-password"
-                placeholder="Your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                aria-invalid={!!errors.password}
-                aria-describedby={errors.password ? "password-err" : undefined}
-              />
-              <button
-                type="button"
-                className="field__toggle"
-                onClick={() => setShowPassword((s) => !s)}
-                aria-pressed={showPassword}
-              >
-                {showPassword ? "Hide" : "Show"}
-              </button>
-            </div>
-            {errors.password && <span id="password-err" className="field__error">{errors.password}</span>}
-          </div>
-
-          <div className="form__row">
-            <label className="check">
-              <input
-                type="checkbox"
-                checked={remember}
-                onChange={(e) => setRemember(e.target.checked)}
-              />
-              Keep me signed in
-            </label>
-            <a href="/forgot-password">Forgot password?</a>
-          </div>
-
-          <button type="submit" className="btn" disabled={loading}>
-            {loading ? "Signing in…" : "Sign in"}
-          </button>
-
-          <p className="form__foot">
-            New to {BRAND}? <a href="/signup">Create an account</a>
-          </p>
-        </form>
-
-        <footer className="login__legal">
-          <span>© {new Date().getFullYear()} {BRAND}</span>
-          <a href="/privacy">Privacy</a>
-          <a href="/terms">Terms</a>
-          <a href="/contact">Contact</a>
-        </footer>
-      </section>
-    </main>
-  );
+      <footer className="lg-foot">&copy; 2026 DiveInSILICON</footer>
+    </div>
+  )
 }
