@@ -15,7 +15,7 @@ const PARTS = [
  *   onStart()  - called when "Start learning" is clicked (e.g. navigate('/signup'))
  * If you don't pass them, the buttons are plain links to /login and /signup.
  */
-export default function Home({ onLogin, onStart }) {
+export default function Home({ onLogin, onStart, onCourses }) {
   const root = useRef(null)
 
   useEffect(() => {
@@ -123,7 +123,7 @@ export default function Home({ onLogin, onStart }) {
       <nav>
         <div className="hm-logo">DiveInSILICON</div>
         <ul>
-          <li><a href="#courses">Courses</a></li>
+          <li><a href="/courses" onClick={e => go(onCourses, e)}>Courses</a></li>
           <li><a href="#interviews">Mock interviews</a></li>
           <li><a href="#placement">Placement prep</a></li>
         </ul>
