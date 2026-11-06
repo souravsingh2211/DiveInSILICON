@@ -3,10 +3,17 @@ import { AuthProvider, useAuth } from './AuthContext'
 import Home from './Home'
 import Login from './Login'
 import Dashboard from './Dashboard'
+import Courses from './Courses'
 
 function HomePage() {
   const nav = useNavigate()
-  return <Home onLogin={() => nav('/login')} onStart={() => nav('/signup')} />
+  return (
+    <Home
+      onLogin={() => nav('/login')}
+      onStart={() => nav('/signup')}
+      onCourses={() => nav('/courses')}
+    />
+  )
 }
 
 // /login and /signup share one page; the route decides which tab opens first
@@ -33,6 +40,7 @@ export default function App() {
           <Route path="/login" element={<AuthPage mode="in" />} />
           <Route path="/signup" element={<AuthPage mode="up" />} />
           <Route path="/dashboard" element={<Private><Dashboard /></Private>} />
+          <Route path="/courses" element={<Courses />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </AuthProvider>
