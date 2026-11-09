@@ -1,0 +1,13 @@
+/* extra rules for the Interview prep, Projects and Internships pages (uses the Courses page styles) */
+.cr .cr-chips{display:flex;flex-wrap:wrap;gap:8px}
+.cr .cr-chip{height:40px;padding:0 16px;border-radius:999px;border:1px solid rgba(255,255,255,.9);background:rgba(255,255,255,.45);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);font:700 13px var(--T);color:var(--ink);cursor:pointer;transition:background .2s,color .2s}
+.cr .cr-chip:hover{background:rgba(255,255,255,.8)}
+.cr .cr-chip.cr-on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.cr .cr-foot.cr-end{justify-content:flex-end}
+.cr .cr-links{flex-wrap:wrap;justify-content:center;gap:22px}
+@media (max-width:900px){.cr .cr-links{display:none}}
+
+:root[data-theme="dark"] .cr .cr-chip{background:linear-gradient(135deg,rgba(255,255,255,.1),rgba(255,255,255,.03));border-color:rgba(255,255,255,.16);box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 14px 36px rgba(0,0,0,.4)}
+:root[data-theme="dark"] .cr .cr-chip.cr-on{background:#e8eefc;color:#0a0f1d;border-color:#e8eefc}
+:root[data-theme="dark"] .cr .cr-chip:hover{background:rgba(255,255,255,.16)}
+:root[data-theme="dark"] .cr .cr-chip.cr-on:hover{background:#fff}

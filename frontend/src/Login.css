@@ -48,3 +48,19 @@ a{color:var(--ink);font-weight:700;text-underline-offset:3px}
 .lg-err{margin:0 0 14px;padding:10px 14px;border-radius:12px;font-size:13px;line-height:1.4;color:#8a1c1c;background:rgba(255,230,230,.6);border:1px solid rgba(220,90,90,.35)}
 .lg-btn:disabled{opacity:.6;cursor:wait;filter:none}
 }
+
+:root[data-theme="dark"] .lg{--ink:#e8eefc;--bg:#0a0f1d;--blue:#7d9bff;background-color:#0a0f1d;background-image:radial-gradient(700px 500px at 75% 45%,rgba(80,110,255,.28),transparent 70%),radial-gradient(500px 400px at 10% 90%,rgba(40,140,200,.22),transparent 70%)}
+:root[data-theme="dark"] .lg-pill,:root[data-theme="dark"] .lg-card,:root[data-theme="dark"] .lg-g{background:linear-gradient(135deg,rgba(255,255,255,.1),rgba(255,255,255,.03));border-color:rgba(255,255,255,.16);box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 14px 36px rgba(0,0,0,.4)}
+:root[data-theme="dark"] .lg-main:before{background:radial-gradient(closest-side,rgba(80,110,255,.4),rgba(80,110,255,.12) 55%,transparent)}
+:root[data-theme="dark"] .lg-tabs{background:rgba(255,255,255,.07);box-shadow:inset 0 1px 2px rgba(0,0,0,.3)}
+:root[data-theme="dark"] .lg-card[data-m=in] .lg-tabs button:first-of-type,:root[data-theme="dark"] .lg-card[data-m=up] .lg-tabs button:last-of-type{color:#0a0f1d}
+:root[data-theme="dark"] .lg-f input{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.16);box-shadow:inset 0 1px 2px rgba(0,0,0,.3);color:#e8eefc}
+:root[data-theme="dark"] .lg-f input::placeholder{color:#7f8aa8}
+:root[data-theme="dark"] .lg-f input:focus{border-color:#7d9bff;box-shadow:0 0 0 3px rgba(125,155,255,.25)}
+:root[data-theme="dark"] .lg-btn{background:#e8eefc;color:#0a0f1d;box-shadow:0 10px 24px rgba(0,0,0,.4)}
+:root[data-theme="dark"] .lg-btn.lg-g{color:#e8eefc}
+:root[data-theme="dark"] .lg-g:hover{background:rgba(255,255,255,.18)}
+:root[data-theme="dark"] .lg-err{color:#ffb4b4;background:rgba(255,90,90,.12);border-color:rgba(255,120,120,.35)}
+:root[data-theme="dark"] .lg-or:before,:root[data-theme="dark"] .lg-or:after{background:#e8eefc}
+:root[data-theme="dark"] .lg-btn.lg-g{background:linear-gradient(135deg,rgba(255,255,255,.1),rgba(255,255,255,.03));color:#e8eefc;box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 6px 18px rgba(0,0,0,.35)}
+:root[data-theme="dark"] .lg-btn.lg-g:hover{background:rgba(255,255,255,.18)}
