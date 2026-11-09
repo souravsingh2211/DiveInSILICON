@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from './AuthContext'
+import ThemeToggle from './ThemeToggle'
 import './Dashboard.css'
 
 // Placeholder page shown after login. Replace the card with your real dashboard.
@@ -12,7 +13,8 @@ export default function Dashboard() {
     <div className="db">
       <nav className="db-nav">
         <div className="db-logo">DiveInSILICON</div>
-        <button type="button" className="db-pill" onClick={() => { logout(); nav('/') }}>Log out</button>
+        <div className="db-right">
+          <ThemeToggle /><button type="button" className="db-pill" onClick={() => nav('/courses')}>Courses</button><button type="button" className="db-pill" onClick={() => { logout(); nav('/') }}>Log out</button></div>
       </nav>
       <main className="db-main">
         <div className="db-card">

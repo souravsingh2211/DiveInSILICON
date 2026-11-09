@@ -1,63 +1,30 @@
-// Chip design flow: 8 stages. Order matters (Stage 1 -> Stage 8).
-// "icon" is an SVG path drawn inside a 24x24 viewBox.
+// Sample data. Later this can come from the backend (e.g. GET /api/courses).
+// progress = % completed by the logged-in user (0 = not started).
+// STAGES follow the real chip design flow, left to right.
 export const STAGES = [
-  { id: 'spec',   label: 'Specification',  desc: 'Decide what the chip must do: features, speed, power and area targets.', icon: 'M6 3h9l4 4v14H6zM14 3v5h5M9 13h7M9 17h7' },
-  { id: 'rtl',    label: 'RTL Design',     desc: 'Describe the hardware in Verilog or VHDL at register-transfer level.', icon: 'M8 7l-5 5 5 5M16 7l5 5-5 5M14 4l-4 16' },
-  { id: 'verify', label: 'Verification',   desc: 'Test the design with testbenches, UVM and assertions before building it.', icon: 'M5 12l4 4 10-10' },
-  { id: 'synth',  label: 'Synthesis',      desc: 'Turn RTL into a gate-level netlist using a standard cell library.', icon: 'M4 6h6v4H4zM14 14h6v4h-6zM10 8h4v8M4 14h6v4H4z' },
-  { id: 'dft',    label: 'DFT',            desc: 'Add scan chains and test logic so manufactured chips can be tested.', icon: 'M4 12h4l2-6 4 12 2-6h4' },
-  { id: 'pd',     label: 'Physical Design', desc: 'Floorplan, place, route and meet timing. The layout of the chip.', icon: 'M3 3h18v18H3zM3 9h18M9 3v18' },
-  { id: 'sta',    label: 'Signoff / STA',  desc: 'Check timing, power and design rules before sending the chip to fab.', icon: 'M12 6v6l4 2M12 3a9 9 0 100 18 9 9 0 000-18z' },
-  { id: 'fab',    label: 'Tape-out',       desc: 'Final files go to the foundry. Then fabrication, packaging and testing.', icon: 'M12 3l9 5v8l-9 5-9-5V8zM12 12l9-5M12 12v9M12 12L3 7' },
+  { id: 'foundations', short: 'CMOS and digital logic', label: 'Foundations', desc: 'Transistors, CMOS and digital logic. Everything else in VLSI is built on these.', icon: 'M3 12h5M8 6v12M12 6v3.5M12 10.5v3M12 14.5v3.5M12 7.5h7V4M12 16.5h7V20M12 12h4' },
+  { id: 'rtl', short: 'Verilog and SystemVerilog', label: 'RTL Design', desc: 'Describe the hardware in Verilog and SystemVerilog. This code becomes the chip.', icon: 'M8 7l-5 5 5 5M16 7l5 5-5 5M14 5l-4 14' },
+  { id: 'verification', short: 'Testbenches and UVM', label: 'Verification', desc: 'Prove the design does what the spec says before it is built. Often most of a project\'s effort.', icon: 'M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6zM8.5 12l2.5 2.5 4.5-5' },
+  { id: 'synthesis', short: 'Gates and timing', label: 'Synthesis and STA', desc: 'Turn RTL into gates, then check that every path meets its timing.', icon: 'M12 4a8 8 0 1 0 0 16a8 8 0 0 0 0-16M12 8v4l3 2' },
+  { id: 'pd', short: 'Placement, clocks, routing', label: 'Physical Design', desc: 'Place the cells, build the clock tree and route the wires to produce the final layout.', icon: 'M3 3h18v18H3zM3 12h18M12 3v18M6.5 7.5h3M14.5 16.5h3' },
+  { id: 'dft', short: 'Scan and ATPG', label: 'DFT and Test', desc: 'Add scan and test logic so every manufactured chip can be checked.', icon: 'M12 3v4M12 17v4M3 12h4M17 12h4M12 9a3 3 0 1 0 0 6a3 3 0 0 0 0-6' },
+  { id: 'analog', short: 'Amplifiers and layout', label: 'Analog and Mixed-Signal', desc: 'Amplifiers, biasing and layout for the analog blocks inside a chip.', icon: 'M2 12c2-7 4-7 6 0s4 7 6 0 4-7 6 0' },
+  { id: 'career', short: 'Questions and coding', label: 'Interview Prep', desc: 'Practise the questions VLSI interviews ask, with model answers.', icon: 'M3 8h18v12H3zM9 8V5h6v3M3 13h18' },
 ]
 
-// stage must match one of the STAGES ids above.
-// progress is a sample value (0-100). Later this can come from your backend.
 export const COURSES = [
-  {
-    id: 'digital-electronics', stage: 'spec', title: 'Digital Electronics Basics',
-    blurb: 'Logic gates, flip-flops, counters and FSMs. The base for all chip design.',
-    skills: ['Logic gates', 'FSM', 'Timing'], level: 'Beginner', lessons: 18, hours: 9, progress: 0,
-  },
-  {
-    id: 'verilog', stage: 'rtl', title: 'Verilog for RTL Design',
-    blurb: 'Write synthesizable Verilog: modules, always blocks, FSMs and datapaths.',
-    skills: ['Verilog', 'RTL', 'FSM'], level: 'Beginner', lessons: 24, hours: 12, progress: 0,
-  },
-  {
-    id: 'systemverilog', stage: 'verify', title: 'SystemVerilog Testbenches',
-    blurb: 'Build self-checking testbenches with classes, randomization and coverage.',
-    skills: ['SystemVerilog', 'Coverage', 'Assertions'], level: 'Intermediate', lessons: 22, hours: 11, progress: 0,
-  },
-  {
-
-    id: 'uvm', stage: 'verify', title: 'UVM Methodology',
-    blurb: 'Industry-standard verification: agents, sequences, scoreboards and env.',
-    skills: ['UVM', 'Agents', 'Scoreboard'], level: 'Advanced', lessons: 28, hours: 16, progress: 0,
-  },
-  {
-    id: 'synthesis', stage: 'synth', title: 'Logic Synthesis',
-    blurb: 'Constraints, libraries and optimization. Get a clean gate-level netlist.',
-    skills: ['SDC', 'Synthesis', 'Libraries'], level: 'Intermediate', lessons: 16, hours: 8, progress: 0,
-  },
-  {
-    id: 'dft', stage: 'dft', title: 'DFT and Scan Insertion',
-    blurb: 'Scan chains, ATPG and BIST. Make your chip testable after fabrication.',
-    skills: ['Scan', 'ATPG', 'BIST'], level: 'Intermediate', lessons: 14, hours: 7, progress: 0,
-  },
-  {
-    id: 'physical-design', stage: 'pd', title: 'Physical Design Flow',
-    blurb: 'Floorplanning, placement, CTS and routing from netlist to layout.',
-    skills: ['Floorplan', 'CTS', 'Routing'], level: 'Advanced', lessons: 26, hours: 15, progress: 0,
-  },
-  {
-    id: 'sta', stage: 'sta', title: 'Static Timing Analysis',
-    blurb: 'Setup, hold, clock skew and timing closure explained step by step.',
-    skills: ['STA', 'Setup/Hold', 'Skew'], level: 'Advanced', lessons: 20, hours: 10, progress: 0,
-  },
-  {
-    id: 'tapeout', stage: 'fab', title: 'Signoff and Tape-out',
-    blurb: 'DRC, LVS, IR drop and final checks before the design goes to the foundry.',
-    skills: ['DRC', 'LVS', 'GDSII'], level: 'Advanced', lessons: 12, hours: 6, progress: 0,
-  },
+  { id: 'cmos-basics', stage: 'foundations', title: 'Semiconductor Devices and CMOS Basics', level: 'Beginner', lessons: 20, hours: 16, progress: 70, skills: ['PN junction', 'MOSFET', 'CMOS inverter'], blurb: 'How transistors work and how they combine into the CMOS gates every chip uses.' },
+  { id: 'digital-for-vlsi', stage: 'foundations', title: 'Digital Electronics for VLSI', level: 'Beginner', lessons: 26, hours: 20, progress: 100, skills: ['Logic design', 'FSMs', 'Timing'], blurb: 'Combinational and sequential design, state machines and the timing ideas behind them.' },
+  { id: 'verilog-zero', stage: 'rtl', title: 'Verilog HDL from Zero', level: 'Beginner', lessons: 28, hours: 21, progress: 45, skills: ['Verilog', 'Testbenches', 'FSM coding'], blurb: 'Write synthesizable Verilog and test it with your own testbenches.' },
+  { id: 'advanced-rtl', stage: 'rtl', title: 'Advanced RTL Design', level: 'Intermediate', lessons: 24, hours: 20, progress: 0, skills: ['SystemVerilog', 'Pipelining', 'CDC'], blurb: 'Pipelines, clock domain crossing, FIFOs and coding style that synthesizes cleanly.' },
+  { id: 'sv-verification', stage: 'verification', title: 'SystemVerilog for Verification', level: 'Intermediate', lessons: 30, hours: 24, progress: 0, skills: ['Classes', 'Assertions', 'Coverage'], blurb: 'Constrained-random testing, assertions and functional coverage.' },
+  { id: 'uvm', stage: 'verification', title: 'UVM Masterclass', level: 'Advanced', lessons: 26, hours: 22, progress: 0, skills: ['UVM', 'Sequences', 'Scoreboards'], blurb: 'Build a reusable UVM testbench: agents, sequences, scoreboards and the factory.' },
+  { id: 'synthesis', stage: 'synthesis', title: 'Logic Synthesis and Constraints', level: 'Intermediate', lessons: 18, hours: 14, progress: 0, skills: ['SDC', 'Synthesis', 'Area and power'], blurb: 'Turn RTL into a gate-level netlist and steer it with timing constraints.' },
+  { id: 'sta', stage: 'synthesis', title: 'Static Timing Analysis', level: 'Intermediate', lessons: 22, hours: 18, progress: 0, skills: ['Setup and hold', 'Clocks', 'Slack'], blurb: 'Read timing reports, fix violations and understand setup, hold and clock skew.' },
+  { id: 'pd-flow', stage: 'pd', title: 'Physical Design Flow', level: 'Advanced', lessons: 28, hours: 24, progress: 0, skills: ['Floorplan', 'CTS', 'Routing'], blurb: 'Floorplanning, placement, clock tree synthesis, routing and signoff checks.' },
+  { id: 'low-power', stage: 'pd', title: 'Low Power Design Techniques', level: 'Advanced', lessons: 16, hours: 12, progress: 0, skills: ['Clock gating', 'UPF', 'DVFS'], blurb: 'Where chip power goes and the techniques used to cut it.' },
+  { id: 'dft', stage: 'dft', title: 'DFT and Scan Design', level: 'Advanced', lessons: 20, hours: 16, progress: 0, skills: ['Scan chains', 'ATPG', 'BIST'], blurb: 'Make chips testable with scan insertion, ATPG and built-in self-test.' },
+  { id: 'analog-ic', stage: 'analog', title: 'Analog IC Design Basics', level: 'Intermediate', lessons: 24, hours: 20, progress: 0, skills: ['Amplifiers', 'Biasing', 'Matching'], blurb: 'Single-stage amplifiers, current mirrors, biasing and the layout habits that matter.' },
+  { id: 'vlsi-interview', stage: 'career', title: 'VLSI Interview Prep', level: 'All levels', lessons: 22, hours: 14, progress: 0, skills: ['CMOS', 'STA', 'Digital design'], blurb: 'The questions VLSI interviews actually ask, from CMOS to timing, with model answers.' },
+  { id: 'rtl-practice', stage: 'career', title: 'RTL Coding Practice', level: 'Intermediate', lessons: 40, hours: 18, progress: 0, skills: ['Verilog', 'FSMs', 'Puzzles'], blurb: 'Timed RTL coding problems of the kind asked in design interviews.' },
 ]

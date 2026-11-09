@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from './AuthContext'
 import { preloadGoogle } from './google'
+import ThemeToggle from './ThemeToggle'
 import './Login.css'
 
 const GoogleIcon = () => (
@@ -58,7 +59,7 @@ export default function Login({ defaultMode = 'in', onBack, onSuccess }) {
     <div className="lg">
       <nav className="lg-nav">
         <button type="button" className="lg-logo" onClick={() => onBack && onBack()}>DiveInSILICON</button>
-        <button type="button" className="lg-pill" onClick={() => onBack && onBack()}>Back to home</button>
+        <div className="tt-right"><ThemeToggle /><button type="button" className="lg-pill" onClick={() => onBack && onBack()}>Back to home</button></div>
       </nav>
 
       <main className="lg-main">

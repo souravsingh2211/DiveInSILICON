@@ -1,19 +1,15 @@
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './AuthContext'
+import { ThemeProvider } from './ThemeContext'
 import Home from './Home'
 import Login from './Login'
 import Dashboard from './Dashboard'
 import Courses from './Courses'
+import Catalog from './Catalog'
 
 function HomePage() {
   const nav = useNavigate()
-  return (
-    <Home
-      onLogin={() => nav('/login')}
-      onStart={() => nav('/signup')}
-      onCourses={() => nav('/courses')}
-    />
-  )
+  return <Home onLogin={() => nav('/login')} onStart={() => nav('/signup')} onCourses={() => nav('/courses')} onNavigate={p => nav(p)} />
 }
 
 // /login and /signup share one page; the route decides which tab opens first
@@ -34,16 +30,21 @@ function Private({ children }) {
 export default function App() {
   return (
     <BrowserRouter>
+      <ThemeProvider>
       <AuthProvider>
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<AuthPage mode="in" />} />
           <Route path="/signup" element={<AuthPage mode="up" />} />
-          <Route path="/dashboard" element={<Private><Dashboard /></Private>} />
           <Route path="/courses" element={<Courses />} />
+          <Route path="/interview" element={<Catalog kind="interview" />} />
+          <Route path="/projects" element={<Catalog kind="projects" />} />
+          <Route path="/internships" element={<Catalog kind="internships" />} />
+          <Route path="/dashboard" element={<Private><Dashboard /></Private>} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </AuthProvider>
+      </ThemeProvider>
     </BrowserRouter>
   )
 }

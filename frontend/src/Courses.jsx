@@ -2,6 +2,9 @@ import { useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from './AuthContext'
 import { STAGES, COURSES } from './courses.data'
+import { NAV } from './catalog.data'
+import './Catalog.css'
+import ThemeToggle from './ThemeToggle'
 import './Courses.css'
 
 export default function Courses() {
@@ -46,13 +49,17 @@ export default function Courses() {
       <nav className="cr-nav">
         <button type="button" className="cr-logo" onClick={() => nav('/')}>DiveInSILICON</button>
         <div className="cr-links">
-          <button type="button" onClick={() => nav('/')}>Home</button>
-          <button type="button" className="cr-on">Courses</button>
+          {NAV.map(([label, path]) => (
+            <button key={path} type="button" className={path === '/courses' ? 'cr-on' : ''} onClick={() => nav(path)}>{label}</button>
+          ))}
           {user && <button type="button" onClick={() => nav('/dashboard')}>Dashboard</button>}
         </div>
-        {user
-          ? <button type="button" className="cr-pill" onClick={() => nav('/dashboard')}>Dashboard</button>
-          : <button type="button" className="cr-pill" onClick={() => nav('/login')}>Log in</button>}
+        <div className="tt-right">
+          <ThemeToggle />
+          {user
+            ? <button type="button" className="cr-pill" onClick={() => nav('/dashboard')}>Dashboard</button>
+            : <button type="button" className="cr-pill" onClick={() => nav('/login')}>Log in</button>}
+        </div>
       </nav>
 
       <header className="cr-head">
